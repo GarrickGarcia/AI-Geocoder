@@ -11,7 +11,7 @@ from arcgis.geocoding import geocode
 # ---------------------------
 AGOL_USERNAME = "xxx"
 AGOL_PASSWORD = "xxx"
-OPENAI_API_KEY = "xxx"
+AI_API_KEY = "xxx"
 
 # Folder containing permit images
 IMAGE_FOLDER = r"xxx"
@@ -25,7 +25,10 @@ SPATIAL_REF = {"wkid": 4326}
 # ---------------------------
 # SET UP CLIENTS
 # ---------------------------
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(
+    api_key=AI_API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
 
 gis = GIS("https://www.arcgis.com", AGOL_USERNAME, AGOL_PASSWORD)
 feature_layer = FeatureLayer(FEATURE_LAYER_URL, gis=gis)
@@ -33,48 +36,69 @@ feature_layer = FeatureLayer(FEATURE_LAYER_URL, gis=gis)
 # ---------------------------
 # FUNCTIONS
 # ---------------------------
+
+def encode_image(image_path):
+    """
+    Encodes an image file to base64 string.
+    """
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
 def analyze_image(filepath):
     """
-    Sends an image to OpenAI and parses the JSON response containing permit fields.
+    Sends an image to AI and parses the JSON response containing permit fields.
     Returns a dict with keys: address, date, size, material, notes.
     """
-    # Read and encode image
-    with open(filepath, "rb") as f:
-        img_bytes = f.read()
-    img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+    img_b64 = encode_image(filepath)
 
-    # Compose prompt
+    prompt_text = (
+        "You are an expert OCR assistant trained specifically to interpret handwritten water/sewer connection permits. "
+        "You will be given an image of a permit filled out by applicants. "
+        "Your task is to extract handwritten entries from known labeled sections of the form, which may vary slightly in position across permits. "
+        "Each field is identified by printed text followed by a handwritten response on or near an underlined blank. "
+        "When given an image, extract and return ONLY a JSON object with the following keys and rules (do not include any explanation or extra text):\n"
+        "  • address: The handwritten address next to 'Location of Installation'. Append ' Marion Indiana 46952' to the result.\n"
+        "  • date: The handwritten date next to the top-left 'Date:' label. Format it as MM-DD-YYYY.\n"
+        "  • size: The first part of the handwritten value next to 'Size and Type of Service Line'. Convert to decimal inches (e.g., 3/4\" becomes 0.75, 1 1/2 becomes 1.5).\n"
+        "  • material: The second part of the same field after the size. Interpret 'K' as 'copper', 'PVC' or 'poly' as 'PVC'. If no material is written, return null.\n"
+        "  • notes: Capture any additional handwritten information near that section that does not belong to the other fields (such as 'behind curb' or hydrant direction), or return null if there are no notes.\n"
+        "Assume handwriting may vary and values may be slightly misaligned. Only extract the fields listed above and return valid JSON."
+    )
+
     messages = [
         {
-            "role": "system",
-            "content": (
-                "You are an expert OCR assistant trained specifically to interpret handwritten water/sewer connection permits. "
-                "You will be given a base64-encoded image of a permit filled out by applicants. "
-                "Your task is to extract handwritten entries from known labeled sections of the form, which may vary slightly in position across permits. "
-                "Each field is identified by printed text followed by a handwritten response on or near an underlined blank."
-
-                "When given an image, extract and return ONLY a JSON object with the following keys and rules (do not include any explanation or extra text):\n"
-                "  • address: The handwritten address next to 'Location of Installation'. Append ' Marion Indiana 46952' to the result.\n"
-                "  • date: The handwritten date next to the top-left 'Date:' label. Format it as MM-DD-YYYY.\n"
-                "  • size: The first part of the handwritten value next to 'Size and Type of Service Line'. Convert to decimal inches (e.g., 3/4\" becomes 0.75, 1 1/2 becomes 1.5).\n"
-                "  • material: The second part of the same field after the size. Interpret 'K' as 'copper', 'PVC' or 'poly' as 'PVC'. If no material is written, return null.\n"
-                "  • notes: Capture any additional handwritten information near that section that does not belong to the other fields (such as 'behind curb' or hydrant direction), or return null if there are no notes.\n"
-
-                "Assume handwriting may vary and values may be slightly misaligned. Only extract the fields listed above and return valid JSON."
-            )
-        },
-        {
             "role": "user",
-            "content": f"Here is the base64-encoded permit image:\n\n{img_b64}"
+            "content": [
+                {
+                    "type": "text",
+                    "text": prompt_text,
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{img_b64}"
+                    },
+                },
+            ],
         }
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4.1-mini",
+        model="gemini-2.5-flash-preview-04-17",
+        reasoning_effort="medium",
         messages=messages,
-        temperature=0
+        temperature=1
     )
     text = response.choices[0].message.content.strip()
+    # Debugging output
+    # print("Raw AI output:", repr(text))
+
+    # Remove Markdown code block if present
+    if text.startswith("```"):
+        text = text.split("```", 2)[1]
+        if text.strip().startswith("json"):
+            text = text.strip()[4:]
+        text = text.strip()
 
     # Parse JSON
     return json.loads(text)
@@ -124,6 +148,7 @@ def main():
             data = analyze_image(path)
 
             addr = data.get('address')
+            print(f"  Found address: {addr}")
             if not addr:
                 print(f"  No address found; skipping {fname}")
                 continue

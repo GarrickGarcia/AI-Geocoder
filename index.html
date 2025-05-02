@@ -3,17 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image File Dropper</title>
+    <title>Geocode Images</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- ArcGIS Maps SDK for JavaScript -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.29/"></script>
 </head>
 <body>
+    <canvas id="orbs-bg"></canvas>
     <div class="container">
-        <h1>Drop an Image File Here</h1>
+        <h1>Geocode Images</h1>
         <div id="drop-zone">
-            <p>Drag & Drop Image</p>
+            <p>Drag & Drop Image or Zip</p>
+            <span class="max-size-note">Max 100MB</span>
         </div>
         <div id="file-info">
             <p>Filename will appear here</p>
+        </div>
+        <div class="ai-key-box">
+            <label for="ai-key-input">AI Key</label>
+            <input type="text" id="ai-key-input" placeholder="Enter AI Key">
+        </div>
+        <div class="ai-key-box">
+            <label for="username-input">Username</label>
+            <input type="text" id="username-input" placeholder="Enter Username">
+        </div>
+        <div class="ai-key-box">
+            <label for="password-input">Password</label>
+            <input type="password" id="password-input" placeholder="Enter Password">
+        </div>
+        <div class="button-row">
+            <button id="check-credentials-btn">Check Credentials</button>
+        </div>
+        <div class="button-row">
+            <button id="check-ai-btn">Check AI</button>
+        </div>
+        <div class="button-row">
+            <button id="sign-out-btn" style="display:none;">Sign Out</button>
+        </div>
+        <div class="button-row">
+            <button id="geocode-btn" style="display:none;">Geocode</button>
+        </div>
+        <div id="processing-log-container">
+            <div id="processing-log-label">Processing Log</div>
+            <pre id="processing-log"></pre>
         </div>
     </div>
     <script src="script.js"></script>

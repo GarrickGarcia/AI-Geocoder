@@ -1,3 +1,203 @@
+#processing-log-container {
+    margin: 30px auto 0 auto;
+    max-width: 600px;
+    width: 100%;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 0 0 10px 0;
+}
+#processing-log-label {
+    font-weight: bold;
+    color: #333;
+    padding: 10px 18px 0 18px;
+    font-size: 1.08em;
+}
+#processing-log {
+    background: transparent;
+    color: #222;
+    font-size: 1em;
+    font-family: "Fira Mono", "Consolas", "Menlo", monospace;
+    padding: 10px 18px 10px 18px;
+    margin: 0;
+    max-height: 180px;
+    min-height: 60px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    border: none;
+}
+.ai-check-pill {
+    display: inline-block;
+    background: #28a745;
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 24px;
+    font-size: 1.08em;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(40,167,69,0.10);
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+}
+#geocode-btn {
+    padding: 12px 38px;
+    background: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+    margin-top: 10px;
+}
+#geocode-btn:hover, #geocode-btn:focus {
+    background: #4b44b6;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+.max-size-note {
+    display: block;
+    margin-top: 10px;
+    color: #888;
+    font-size: 0.98em;
+    font-style: italic;
+}
+#sign-out-btn {
+    padding: 12px 38px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+    margin-top: 10px;
+}
+#sign-out-btn:hover, #sign-out-btn:focus {
+    background: #a71d2a;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+.button-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 36px;
+}
+
+/* Blue pill style for Check AI button (matches Check Credentials) */
+#check-ai-btn {
+    padding: 12px 38px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+    margin-top: 0;
+}
+#check-ai-btn:hover, #check-ai-btn:focus {
+    background: #0056b3;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+
+#check-credentials-btn {
+    padding: 12px 38px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+#check-credentials-btn:hover, #check-credentials-btn:focus {
+    background: #0056b3;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+/* Animated orbs background */
+#orbs-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: #000;
+    display: block;
+}
+
+/* Style for AI Key box */
+.ai-key-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 36px auto 0 auto;
+    width: 100%;
+    max-width: 400px;
+}
+
+.ai-key-box label {
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 0;
+    margin-right: 18px;
+    font-size: 1.08em;
+    letter-spacing: 0.5px;
+    min-width: 110px;
+    text-align: right;
+}
+
+.ai-key-box input[type="text"],
+.ai-key-box input[type="password"] {
+    padding: 10px 14px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    width: 250px;
+    font-size: 1em;
+    box-sizing: border-box;
+    margin-bottom: 0;
+}
+
+/* Even vertical spacing between all .ai-key-box elements */
+.ai-key-box + .ai-key-box {
+    margin-top: 22px;
+}
+
+#file-info {
+    margin-top: 30px;
+    margin-bottom: 38px;
+    min-height: 30px;
+    max-height: 300px;
+    overflow-y: auto;
+    transition: max-height 0.3s;
+}
+
+#file-info ul {
+    list-style: disc inside;
+    margin: 0;
+    padding-left: 18px;
+    color: #555;
+    text-align: left;
+}
+
+#file-info li {
+    font-weight: bold;
+    margin-bottom: 4px;
+    word-break: break-all;
+}
 body {
     font-family: sans-serif;
     display: flex;
@@ -14,6 +214,8 @@ body {
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
 }
 
 h1 {
